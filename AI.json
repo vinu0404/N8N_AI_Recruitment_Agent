@@ -1,0 +1,526 @@
+{
+  "name": "Test",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1480,
+        180
+      ],
+      "id": "2436f725-286e-4620-9cac-8ef2275fa2c9",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "filter": {
+          "folderId": {
+            "__rl": true,
+            "value": "1sHSDjZYXV_Cx0BFnHZNSJGTPapXLAWGF",
+            "mode": "list",
+            "cachedResultName": "enginerring",
+            "cachedResultUrl": "https://drive.google.com/drive/folders/1sHSDjZYXV_Cx0BFnHZNSJGTPapXLAWGF"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -1260,
+        180
+      ],
+      "id": "29040ce8-d0d0-4d1c-9549-5d22786044cf",
+      "name": "Google Drive",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "kZirNVk5czfQJBgM",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -1080,
+        180
+      ],
+      "id": "38114903-5c92-4643-9fc3-97b06b1e71f2",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -580,
+        100
+      ],
+      "id": "1bbfa6a6-65b3-4bdf-bf2f-4501b9a5a3dd",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.text }}",
+        "schemaType": "manual",
+        "inputSchema": "{\n\t\"type\": \"object\",\n\t\"properties\": {\n\t\t\"candidate_name\": {\n\t\t\t\"type\": \"string\"\n\t\t},\n\t\t\"email_address\": {\n\t\t\t\"type\": \"string\",\n\t\t\t\"format\":\"email\"\n\t\t}\n\t}\n}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1,
+      "position": [
+        -300,
+        -60
+      ],
+      "id": "49ae9582-b042-4953-9ca4-a246060734ab",
+      "name": "Information Extractor"
+    },
+    {
+      "parameters": {
+        "model": "amazon.nova-pro-v1:0",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAwsBedrock",
+      "typeVersion": 1,
+      "position": [
+        -340,
+        120
+      ],
+      "id": "24c97a94-bc9f-4c9c-83ed-0b2e4502b5e8",
+      "name": "AWS Bedrock Chat Model",
+      "credentials": {
+        "aws": {
+          "id": "6T2xvOK3N6VS10Dj",
+          "name": "AWS account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "1JgrzOvkUM6dmtzG2-4qOZ4yXU54KDktQ",
+          "mode": "list",
+          "cachedResultName": "job_description1.txt",
+          "cachedResultUrl": "https://drive.google.com/file/d/1JgrzOvkUM6dmtzG2-4qOZ4yXU54KDktQ/view?usp=drivesdk"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -840,
+        380
+      ],
+      "id": "bb85a124-62bc-4efd-aa01-ee64649d1304",
+      "name": "Google Drive2",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "kZirNVk5czfQJBgM",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "numberInputs": 3,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        -180,
+        300
+      ],
+      "id": "0bde9e6e-3e8b-446a-becb-401cb28d29a6",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=CV:\n {{ $json.text }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=YOU ARE THE WORLD’S MOST ACCURATE AND EFFICIENT RESUME ANALYST AND SUMMARIZER, renowned for creating concise, insightful summaries and evaluating candidate-job alignment with exceptional precision.  You will be provided with:  A candidate’s resume: {{ $json.text }}  A job description: {{ $json.data }}  Your task is twofold:  1. Summarize the Resume into the following three sections: - **Educational Qualifications**: Include degrees, institutions, and graduation years. - **Job History**: Include job titles, companies, and employment dates, along with key responsibilities. - **Skill Set**: List technical, soft, and industry-specific skills.  2. Evaluate the Candidate’s Suitability for the Job: Compare the resume content to the job description and assess how well the candidate’s background aligns with the role. Assign a score from 1 to 10 based on the following scale:  - 1–3 (Weak Match): Lacks critical qualifications or experience. - 4–6 (Moderate Match): Some relevant experience but noticeable gaps. - 7–8 (Strong Match): Meets most criteria with relevant background. - 9–10 (Excellent Match): Perfect or exceptional fit for the role.  Your output MUST follow this strict format exactly (without any markdown formatting like `**`, `###`, or extra lines):  Name of Person:   [Full name]  or [No name there]  if name was not there Mail or any other contact info:   [Email address or other contact info]  Educational Qualifications:   - [Degree], [Institution], [Year]   - [Degree], [Institution], [Year]    Job History:   - [Job Title], [Company], [Dates]: [Key responsibilities or achievements]   - [Job Title], [Company], [Dates]: [Key responsibilities or achievements]    Skill Set:   [Skill 1], [Skill 2], [Skill 3], ...  Candidate Evaluation:   Score: [1–10]  "
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.6,
+      "position": [
+        -20,
+        340
+      ],
+      "id": "6358ef2b-eff8-4b4b-9996-69b766c84328",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": "amazon.nova-pro-v1:0",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAwsBedrock",
+      "typeVersion": 1,
+      "position": [
+        80,
+        560
+      ],
+      "id": "982960fe-4bfd-4c26-9dde-0166c680000d",
+      "name": "AWS Bedrock Chat Model1",
+      "credentials": {
+        "aws": {
+          "id": "6T2xvOK3N6VS10Dj",
+          "name": "AWS account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const output =$input.first().json.text; // This is the LLM response in the new format\nfunction extractSection(pattern, multiline = false) {\n  const regex = new RegExp(pattern, multiline ? \"ms\" : \"m\");\n  const match = output.match(regex);\n  return match ? match[1].trim() : \"\";\n}\n\n// Extract fields using clean patterns\nconst name = extractSection(/Name of Person:\\s*(.+)/);\nconst contact = extractSection(/Mail or any other contact info:\\s*(.+)/);\nconst education = extractSection(/Educational Qualifications:\\s*([\\s\\S]*?)Job History:/, true);\nconst jobHistory = extractSection(/Job History:\\s*([\\s\\S]*?)Skill Set:/, true);\nconst skillsRaw = extractSection(/Skill Set:\\s*(.+)/);\nconst skills = skillsRaw.split(\",\").map(skill => skill.trim());\n\nconst score = extractSection(/Score:\\s*(\\d+)/);\n\n// Return structured data\nreturn [\n  {\n    json: {\n      name,\n      contact,\n      education,\n      jobHistory,\n      skills,\n      score: parseInt(score)\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        360,
+        360
+      ],
+      "id": "18f114c8-fd78-4a04-a423-dcfe9370a415",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1jCF9Sk-7BrDXWPhDLXcrUmvCU2BwbrjSYR8dV5hjrtI",
+          "mode": "list",
+          "cachedResultName": "Profile",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1jCF9Sk-7BrDXWPhDLXcrUmvCU2BwbrjSYR8dV5hjrtI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1jCF9Sk-7BrDXWPhDLXcrUmvCU2BwbrjSYR8dV5hjrtI/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Candidate_Name": "= {{ $json.name }}",
+            "Education": "={{ $json.education }}",
+            "Contact": "={{ $json.contact }}",
+            "Skill": "={{ $json.skills }}",
+            "Job_History": "={{ $json.jobHistory }}",
+            "Score": "={{ $json.score }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Candidate_Name",
+              "displayName": "Candidate_Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Contact",
+              "displayName": "Contact",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Education",
+              "displayName": "Education",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Skill",
+              "displayName": "Skill",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Job_History",
+              "displayName": "Job_History",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Score",
+              "displayName": "Score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        660,
+        680
+      ],
+      "id": "dbdf0377-c026-4e52-880e-3990e7c44c8c",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "MXzj0Ib1zdEcPdo1",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -800,
+        20
+      ],
+      "id": "12671b21-eabd-449f-929b-d54bb4a2f555",
+      "name": "Google Drive1",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "kZirNVk5czfQJBgM",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "text",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -520,
+        520
+      ],
+      "id": "11e4ba62-414a-4c74-ad4c-cb47d11a1bb1",
+      "name": "Extract from File1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Google Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Google Drive2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Google Drive1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "AWS Bedrock Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive2": {
+      "main": [
+        [
+          {
+            "node": "Extract from File1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Information Extractor": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AWS Bedrock Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive1": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "99c04457-f9d6-42ed-840a-e7c8296b2956",
+  "meta": {
+    "instanceId": "56488f7ae4747a9f3ce09683c4c0551939170e3869a4910a27cef2250c1512f4"
+  },
+  "id": "IPwq0a3XiciHmNDf",
+  "tags": []
+}
