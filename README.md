@@ -1,6 +1,7 @@
 #  Resume Screening Workflow – n8n
 
-[Demo_Video_of_v1](https://drive.google.com/file/d/10_LuHV6t3m4SCRuGqvhMcsuMpdA1dKRD/view?usp=sharing)
+ - [Demo_Video_of_v1](https://drive.google.com/file/d/10_LuHV6t3m4SCRuGqvhMcsuMpdA1dKRD/view?usp=sharing)
+-  [Demo_Video_of_v2](https://drive.google.com/file/d/1N9xcewCepLZBqRprVyHqf-Ddg92aqZOu/view?usp=sharing)
 
 This workflow automates the **resume screening process** using `n8n` and integrates with **AWS Bedrock** for summarization and evaluation of candidates against a job description.
 
