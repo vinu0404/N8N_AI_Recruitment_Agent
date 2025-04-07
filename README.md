@@ -12,7 +12,7 @@ This workflow automates the **resume screening process** using `n8n` and integra
    - Starts the flow for a batch resume screening.
 
 2. **Get Resume Data and Job Description**  
-   - Format: .pdf file in Google Drive for Resume and .docs file for for Job Description.
+   - Format: .pdf file in Google Drive for Resume and .txt file for for Job Description.
 
 3. **Summarizer & Evaluator Node**  
    - **Type**: AWS Bedrock (LLM: `mistral.mixtral-8x7b-instruct-v0:1`)
