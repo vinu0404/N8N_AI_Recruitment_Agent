@@ -6,7 +6,7 @@
 
 This workflow automates the **resume screening process** using `n8n` and integrates with **AWS Bedrock** for summarization and evaluation of candidates against a job description.
 
-##  Workflow Overview (in n8n)  
+##  Version 1  
 
 1. **Trigger Node**  
    - Type: Manual(in v1,v2) & Webhook(in v3) 
@@ -32,7 +32,7 @@ This workflow automates the **resume screening process** using `n8n` and integra
 
 5. **Store or Output Node**  
    - Saves to Google Sheets.
-  
+  ![Architecture_of_v1]()
   ### Steps from 1 to 5 are present in every version.
 
 ## Version 2 Updates
@@ -40,7 +40,7 @@ This workflow automates the **resume screening process** using `n8n` and integra
 ### Email Notifications (Partial)
 
 - **To Recruiter**: 
-  - Implemented functionality to send an email to the recruiter with a **table format** listing all the selected candidates.
+  - Implemented functionality to send an email to the recruiter with a **table format** listing all the selected candidates whose score is greater than 7.
   - This helps recruiters keep a record of whom they selected .
 
 - **To Candidates**: 
@@ -57,11 +57,11 @@ This workflow automates the **resume screening process** using `n8n` and integra
 ### New Features
 
 - **AI-Powered Shortlisting**
-  - The system now uses AI to automatically extract the **top K candidates** from the database based on their scores.
+  - The system now uses AI to automatically extract the **Candidates whose score is greater than 7** from the database based on their scores.
   - This saves time by allowing recruiters to focus only on the best-fit candidates instead of going through all resumes.
 
 - **Recruiter Selection Interface**
-  - A clean and interactive **web page** displays the top K shortlisted candidates.
+  - A clean and interactive **web page** displays the shortlisted candidates whose score is greater than 7.
   - Recruiters can **select candidates** directly from this list with checkboxes.
 
 - **Email Notifications**
@@ -73,6 +73,8 @@ This workflow automates the **resume screening process** using `n8n` and integra
   - The system uses this webhook to handle email delivery and track actions.
 
 - **One-Click Workflow**
-  - Everything is managed from a single page — fetch top K candidates, select, and trigger the email workflow with just a few clicks.
-  - ![Architecture_of_v3]()
+  - Everything is managed from a single page — fetch  candidates whose score is greater than 7, select, and trigger the email workflow with just a few clicks.
+  - ![Architecture_of_v3_fetch_candiadtes](Give_resume.png)
+  - ![Architecture_of_v3_fetch_candiadtes](email_send.png)
+
 
