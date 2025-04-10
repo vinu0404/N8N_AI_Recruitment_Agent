@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Candidate Selector</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to bottom right, #fdfbfb, #ebedee);
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+
+    .container {
+      background-color: white;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+      width: 95%;
+      max-width: 950px;
+      text-align: center;
+      position: relative;
+    }
+
+    .logo-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.logo {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%; /* makes it round */
+  object-fit: cover;  /* ensures the image fits well */
+  border: 3px solid #fff; /* optional: white border */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2); /* adds a subtle shadow */
+  transition: transform 0.3s ease;
+}
+
+.logo:hover {
+  transform: scale(1.05); /* subtle zoom on hover */
+}
+
+
+    @keyframes popIn {
+      0% { transform: scale(0.8); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    h2 {
+      color: #333;
+      margin-bottom: 20px;
+      font-size: 28px;
+    }
+
+    #candidateTable {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    #candidateTable th, #candidateTable td {
+      border: 1px solid #ddd;
+      padding: 12px;
+      text-align: center;
+    }
+
+    #candidateTable th {
+      background-color: #f2f2f2;
+    }
+
+    #sendEmailBtn,
+    #fetchBtn {
+      padding: 12px 25px;
+      font-weight: bold;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      margin: 15px 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s;
+    }
+
+    #fetchBtn {
+      background-color: #007bff;
+    }
+
+    #fetchBtn:hover {
+      background-color: #0056b3;
+      transform: scale(1.03);
+    }
+
+    #sendEmailBtn {
+      background-color: #999;
+      cursor: not-allowed;
+    }
+
+    #sendEmailBtn.active {
+      background-color: #28a745;
+      cursor: pointer;
+    }
+
+    #sendEmailBtn.active:hover {
+      background-color: #218838;
+      transform: scale(1.03);
+    }
+
+    #loadingText {
+      display: none;
+      margin-top: 10px;
+    }
+
+    .spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #007bff;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      animation: spin 1s linear infinite;
+      display: inline-block;
+      vertical-align: middle;
+      margin-left: 10px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    #tableContainer {
+      display: none;
+      margin-top: 20px;
+    }
+
+    .success-check {
+      display: none;
+      font-size: 60px;
+      color: #28a745;
+      animation: popIn 0.5s ease;
+    }
+
+    footer {
+      margin-top: 30px;
+      font-size: 14px;
+      color: #888;
+    }
+
+    a {
+      color: #007bff;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="logo-container">
+        <img src="image.jpg" alt="Logo" class="logo">
+        <h2>Talent Flow</h2>
+      </div>
+      
+    
+    <button id="fetchBtn">Fetch Candidates</button>
+    <span id="loadingText">Loading<span class="spinner"></span></span>
+
+    <div id="tableContainer">
+      <table id="candidateTable">
+        <thead>
+          <tr>
+            <th>Select</th>
+            <th>Name</th>
+            <th>Contact</th>
+            <th>Score</th>
+            <th>Resume</th>
+          </tr>
+        </thead>
+        <tbody id="candidateBody"></tbody>
+      </table>
+      <button id="sendEmailBtn" class="btn" disabled>📧 Send Email</button>
+    </div>
+
+    <div class="success-check" id="successCheck">✅</div>
+
+    <footer>Made by Vinu🤠</footer>
+  </div>
+
+  <script>
+    const fetchBtn = document.getElementById('fetchBtn');
+    const loadingText = document.getElementById('loadingText');
+    const tableContainer = document.getElementById('tableContainer');
+    const candidateBody = document.getElementById('candidateBody');
+    const sendEmailBtn = document.getElementById('sendEmailBtn');
+    const successCheck = document.getElementById('successCheck');
+
+    let selectedCandidatesJSON = null;
+
+    fetchBtn.addEventListener('click', async () => {
+      loadingText.style.display = 'inline-block';
+      candidateBody.innerHTML = '';
+      tableContainer.style.display = 'none';
+      sendEmailBtn.classList.remove('active');
+      sendEmailBtn.disabled = true;
+      successCheck.style.display = 'none';
+
+      try {
+        const response = await fetch("https://vin17.app.n8n.cloud/webhook/50c09319-b234-4661-a1a3-78f323ec5007");
+        const data = await response.json();
+
+        let candidates = [];
+
+        if (Array.isArray(data) && data[0]?.candidates) {
+          candidates = data[0].candidates;
+        } else if (data?.candidates) {
+          candidates = data.candidates;
+        }
+
+        if (candidates.length === 0) {
+          candidateBody.innerHTML = '<tr><td colspan="5">No candidates found.</td></tr>';
+        } else {
+          candidates.forEach((candidate, index) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td><input type="checkbox" class="candidateCheckbox" data-index="${index}"></td>
+              <td>${candidate.Candidate_Name}</td>
+              <td>${candidate.Contact}</td>
+              <td>${candidate.Score || '-'}</td>
+              <td><a href="${candidate.Resume_Link}" target="_blank">📄 View</a></td>
+            `;
+            candidateBody.appendChild(row);
+          });
+
+          tableContainer.style.display = 'block';
+          attachCheckboxListeners(candidates);
+        }
+
+      } catch (err) {
+        alert("❌ Error fetching candidates!");
+        console.error(err);
+      } finally {
+        loadingText.style.display = 'none';
+      }
+    });
+
+    function attachCheckboxListeners(candidates) {
+      const checkboxes = document.querySelectorAll('.candidateCheckbox');
+
+      checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', () => {
+          const selected = getSelectedCandidates(candidates);
+          selectedCandidatesJSON = selected;
+          if (selected.length > 0) {
+            sendEmailBtn.classList.add('active');
+            sendEmailBtn.disabled = false;
+          } else {
+            sendEmailBtn.classList.remove('active');
+            sendEmailBtn.disabled = true;
+          }
+        });
+      });
+
+      sendEmailBtn.addEventListener('click', () => {
+        if (selectedCandidatesJSON?.length > 0) {
+          sendSelectedCandidatesToWorkflow(selectedCandidatesJSON);
+        } else {
+          alert("No candidates selected.");
+        }
+      });
+    }
+
+    function getSelectedCandidates(candidates) {
+      const checkboxes = document.querySelectorAll('.candidateCheckbox');
+      const selected = [];
+
+      checkboxes.forEach((checkbox, index) => {
+        if (checkbox.checked) {
+          selected.push(candidates[index]);
+        }
+      });
+
+      return selected;
+    }
+
+    async function sendSelectedCandidatesToWorkflow(selectedCandidates) {
+      try {
+        const response = await fetch("https://vin17.app.n8n.cloud/webhook/cf12a54f-809d-4e8f-8e8e-9df952448c68", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ candidates: selectedCandidates })
+        });
+
+        if (response.ok) {
+          successCheck.style.display = 'block';
+          setTimeout(() => location.reload(), 5000);
+        } else {
+          alert("❌ Failed to send candidates.");
+          console.error("Error status:", response.status);
+        }
+      } catch (err) {
+        console.error("❌ Error sending data to webhook:", err);
+        alert("An error occurred while sending candidates.");
+      }
+    }
+  </script>
+
+</body>
+</html>

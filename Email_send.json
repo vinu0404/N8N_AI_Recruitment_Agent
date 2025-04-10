@@ -1,0 +1,206 @@
+{
+  "name": "Email_send",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "cf12a54f-809d-4e8f-8e8e-9df952448c68",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -400,
+        -400
+      ],
+      "id": "c2f4a1fc-c12b-4d39-a09d-0eedb5978c20",
+      "name": "Webhook",
+      "webhookId": "cf12a54f-809d-4e8f-8e8e-9df952448c68"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.Contact }}",
+        "subject": "From me",
+        "message": "=Hello sir you are selected for interview.",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        560,
+        120
+      ],
+      "id": "702a6999-5c05-4dd1-9332-0d2c51bc25f6",
+      "name": "Gmail",
+      "webhookId": "267de7bb-1d41-40cb-9e4e-a894076c164b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "46wGVDmo7X7FqA8k",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const candidates = $input.first().json.body?.candidates || [];\n\nconst output = candidates.map(candidate => {\n  return {\n    json: {\n      Candidate_Name: candidate.Candidate_Name,\n      Contact: candidate.Contact,\n      Resume_Link: candidate.Resume_Link\n    }\n  };\n});\n\nreturn output;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        20,
+        -20
+      ],
+      "id": "0a1e8130-844a-460a-85a4-631f8155d5a1",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "jsCode": "// This returns a single item with a number value\nreturn [\n  {\n    json: {\n      number: 42\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        820,
+        140
+      ],
+      "id": "a8e2b1dd-376e-4946-813b-0501c6c584b2",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "sendTo": "22cd3034@rgipt.ac.in",
+        "subject": "Mail sent",
+        "message": "=mail has been sent to selected candidates ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        960,
+        -280
+      ],
+      "id": "514bdd4d-89cc-4a04-9625-e9e61ffa43d1",
+      "name": "Gmail1",
+      "webhookId": "1fca6dd3-caac-4c6b-8c5e-b20ae48f07ee",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "46wGVDmo7X7FqA8k",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        240,
+        -20
+      ],
+      "id": "602ef90a-bd7a-4482-bd89-e7ec5fc82347",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "jsCode": "// This returns a single item with a number value\nreturn [\n  {\n    json: {\n      number: 42\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        500,
+        -240
+      ],
+      "id": "215cb2f7-eab2-4d90-89c2-809a845039d9",
+      "name": "Code2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Code2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code2": {
+      "main": [
+        [
+          {
+            "node": "Gmail1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "8000be5f-956a-4d82-b0ad-55508d07fd80",
+  "meta": {
+    "instanceId": "62184075674dd806bc5b9ae207cc93870d1c89f20f25d8e9aaa3bda1a913c7c8"
+  },
+  "id": "rpp3DN2afgY31QAn",
+  "tags": []
+}
