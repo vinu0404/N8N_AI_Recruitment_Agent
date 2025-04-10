@@ -50,7 +50,7 @@ This workflow automates the **resume screening process** using `n8n` and integra
  *This version focused on enhancing recruiter communication and tracking selections through structured email reports.*
 
 ---
-- [Architecture]()
+- ![Architecture_of_v2](AI_recruitment_v2.png)
 
  ## Version 3 Updates
 
@@ -74,4 +74,5 @@ This workflow automates the **resume screening process** using `n8n` and integra
 
 - **One-Click Workflow**
   - Everything is managed from a single page — fetch top K candidates, select, and trigger the email workflow with just a few clicks.
+  - ![Architecture_of_v3]()
 
