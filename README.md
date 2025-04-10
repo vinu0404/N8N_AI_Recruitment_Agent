@@ -32,7 +32,7 @@ This workflow automates the **resume screening process** using `n8n` and integra
 
 5. **Store or Output Node**  
    - Saves to Google Sheets.
-  ![Architecture_of_v1]()
+  ![Architecture_of_v1](AI_recruitment_v1.png)
   ### Steps from 1 to 5 are present in every version.
 
 ## Version 2 Updates
